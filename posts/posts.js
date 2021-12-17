@@ -2,6 +2,7 @@ const express =require('express')
 const bodyParser = require("body-parser")
 const { randomBytes } =require('crypto')
 const cors = require("cors")
+const axios = require("axios")
 
 // get posts list
 // create post
@@ -20,14 +21,22 @@ app.get("/posts", (req,res) => {
 })
 
 
-app.post("/posts", (req,res) => {
+app.post("/posts", async (req,res) => {
     console.log("req: ", req.body)
     const {title} = req.body;
     const id = randomBytes(4).toString("hex")
-    posts[id] = {
+    const newPost = {
         id,
         title
     }
+    
+    posts[id] = newPost
+
+    await axios.post("http://localhost:4005/events", {
+        type:"PostCreated",
+        data: newPost
+    }).catch(e=> console.log("error while sending to event bus: ", e))
+
     res.status(201).send(posts[id])
 })
 
