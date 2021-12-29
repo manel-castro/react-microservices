@@ -1,50 +1,50 @@
-const express =require('express')
-const bodyParser = require("body-parser")
-const { randomBytes } =require('crypto')
-const cors = require("cors")
-const axios = require("axios")
+const express = require("express");
+const bodyParser = require("body-parser");
+const { randomBytes } = require("crypto");
+const cors = require("cors");
+const axios = require("axios");
 
 // get posts list
 // create post
 
+const app = express();
 
-const app = express()
+app.use(bodyParser.json());
+app.use(cors());
 
-app.use(bodyParser.json())
-app.use(cors())
+const posts = {};
 
-const posts = {}
+app.get("/posts", (req, res) => {
+  res.send(posts);
+});
 
+app.post("/posts", async (req, res) => {
+  console.log("req: ", req.body);
+  const { title } = req.body;
+  const id = randomBytes(4).toString("hex");
+  const newPost = {
+    id,
+    title,
+  };
 
-app.get("/posts", (req,res) => {
-    res.send(posts)
-})
+  posts[id] = newPost;
 
+  await axios
+    .post("http://localhost:4005/events", {
+      type: "PostCreated",
+      data: newPost,
+    })
+    .catch((e) => console.log("error while sending to event bus: ", e));
 
-app.post("/posts", async (req,res) => {
-    console.log("req: ", req.body)
-    const {title} = req.body;
-    const id = randomBytes(4).toString("hex")
-    const newPost = {
-        id,
-        title
-    }
-    
-    posts[id] = newPost
+  res.status(201).send(posts[id]);
+});
 
-    await axios.post("http://localhost:4005/events", {
-        type:"PostCreated",
-        data: newPost
-    }).catch(e=> console.log("error while sending to event bus: ", e))
+app.post("/events", (req, res) => {
+  console.log("Received Event: ", req.body.type);
+  res.send({});
+});
 
-    res.status(201).send(posts[id])
-})
-
-
-app.post("/events", (req,res) => {
-    console.log("Received Event: ", req.body.type);
-    res.send({})
-})
-
-app.listen(4000, () => console.log("Listening to port 4000"))
-
+app.listen(4000, () => {
+  console.log("updating k8s");
+  console.log("Listening to port 4000");
+});
