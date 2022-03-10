@@ -46,5 +46,6 @@ app.post("/events", (req, res) => {
 
 app.listen(4000, () => {
   console.log("updating k8s");
+  console.log("222 updating k8s");
   console.log("Listening to port 4000");
 });
