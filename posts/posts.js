@@ -9,16 +9,19 @@ const axios = require("axios");
 
 const app = express();
 
+console.log("POSTS started");
+
 app.use(bodyParser.json());
 app.use(cors());
 
 const posts = {};
 
 app.get("/posts", (req, res) => {
+  console.log("posts requested");
   res.send(posts);
 });
 
-app.post("/posts", async (req, res) => {
+app.post("/posts/create", async (req, res) => {
   console.log("req: ", req.body);
   const { title } = req.body;
   const id = randomBytes(4).toString("hex");
@@ -30,7 +33,7 @@ app.post("/posts", async (req, res) => {
   posts[id] = newPost;
 
   await axios
-    .post("http://localhost:4005/events", {
+    .post("http://event-bus-srv:4005/events", {
       type: "PostCreated",
       data: newPost,
     })
@@ -46,6 +49,7 @@ app.post("/events", (req, res) => {
 
 app.listen(4000, () => {
   console.log("updating k8s");
-  console.log("222 updating k8s");
+  console.log("333 updating k8s");
+  console.log("11 updating k8s");
   console.log("Listening to port 4000");
 });
