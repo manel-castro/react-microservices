@@ -1,9 +1,10 @@
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import { User } from "../models/user";
 
 import { body, validationResult } from "express-validator";
 import { RequestValidationError } from "../errors/request-validation-error";
 import { DatabaseConnectionError } from "../errors/database-connection-error";
+import { BadRequestError } from "../errors/bad-request-error";
 
 const router = express.Router();
 
@@ -16,11 +17,11 @@ router.post(
       .isLength({ min: 4, max: 20 })
       .withMessage("Password must be between 4 and 20"),
   ],
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      throw new RequestValidationError(errors.array());
+      return next(new RequestValidationError(errors.array()));
     }
 
     const { email, password } = req.body;
@@ -28,8 +29,7 @@ router.post(
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      console.log("Email in use");
-      return res.send({});
+      return next(new BadRequestError("Email in use"));
     }
 
     const user = User.build({ email, password });
