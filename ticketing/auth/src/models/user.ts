@@ -19,16 +19,29 @@ interface UserDoc extends mongoose.Document {
   // any extra property for mongo to be used would need to be specified here
 }
 
-const userSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: true,
+const userSchema = new mongoose.Schema(
+  {
+    email: {
+      type: String,
+      required: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
   },
-  password: {
-    type: String,
-    required: true,
-  },
-});
+  {
+    // this is more VIEW logic into a VIEW-MODEL logic
+    toJSON: {
+      transform(doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+        delete ret.password;
+        delete ret.__v;
+      },
+    },
+  }
+);
 
 userSchema.pre("save", async function (done) {
   // why to use function instead of () => : 166 Mongoose presaved hooks: min 2
