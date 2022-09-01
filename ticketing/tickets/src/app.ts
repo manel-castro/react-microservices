@@ -11,6 +11,7 @@ import {
 
 import { validateLocaleAndSetLanguage } from "typescript";
 import { createTicketRouter } from "./routes/new";
+import { showTicketRouter } from "./routes/show";
 
 const app = express();
 app.set("trust proxy", true);
@@ -27,6 +28,7 @@ app.use(
 app.use(currentUser); // for all routes to know if it's auth
 
 app.use(createTicketRouter);
+app.use(showTicketRouter);
 
 app.get("*", async (req, res, next) => {
   next(new NotFoundError());
