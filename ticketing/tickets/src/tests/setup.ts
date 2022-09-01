@@ -3,9 +3,10 @@ import mongoose from "mongoose";
 
 import { app } from "../app";
 import request from "supertest";
+import jwt from "jsonwebtoken";
 
 declare global {
-  function signup(): Promise<string[]>;
+  var signup: () => string[];
 }
 
 let mongo: any;
@@ -34,15 +35,19 @@ afterAll(async () => {
   await mongoose.connection.close();
 });
 
-global.signup = async () => {
-  const email = "test@test.com";
-  const password = "password";
+global.signup = () => {
+  const payload = {
+    id: "some",
+    email: "some@email.test",
+  };
 
-  const response = await request(app)
-    .post("/api/users/signup")
-    .send({ email, password })
-    .expect(201);
+  const token = jwt.sign(payload, process.env.JWT_KEY!);
 
-  const cookie = response.get("Set-Cookie");
-  return cookie;
+  const session = { jwt: token };
+
+  const sessionJSON = JSON.stringify(session);
+
+  const base64 = Buffer.from(sessionJSON).toString("base64");
+
+  return [`session=${base64}`];
 };
