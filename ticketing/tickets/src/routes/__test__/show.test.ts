@@ -5,8 +5,11 @@ import { app } from "../../app";
 it("returns a 404 if the ticket is not found", async () => {
   const id = new mongoose.Types.ObjectId().toHexString(); // generate a valid mongoose id
 
-  const response = await request(app).get(`/api/tickets/${id}`).send();
-  console.log(response.body);
+  const response = await request(app)
+    .get(`/api/tickets/${id}`)
+    .send()
+    .expect(404);
+  // console.log(response.body);
   // expect(response.body);
 });
 it("returns the ticket is found", async () => {
