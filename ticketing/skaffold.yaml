@@ -28,3 +28,12 @@ build:
         manual:
           - src: "src/**/*.js"
             dest: .
+    - image: manelcastro/tickets
+      # - image: us.gcr.io/ticketing-dev-359710/tickets
+      context: tickets
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "src/**/*.ts"
+            dest: .

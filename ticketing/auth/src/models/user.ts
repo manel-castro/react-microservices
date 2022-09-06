@@ -32,6 +32,7 @@ const userSchema = new mongoose.Schema(
   },
   {
     // this is more VIEW logic into a VIEW-MODEL logic
+    // future database compatibility
     toJSON: {
       transform(doc, ret) {
         ret.id = ret._id;
