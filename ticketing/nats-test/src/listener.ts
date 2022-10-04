@@ -17,11 +17,25 @@ stan.on("connect", () => {
     process.exit();
   });
 
-  const options = stan.subscriptionOptions().setManualAckMode(true); // 306: Manual Ack Mode
+  const options = stan
+    .subscriptionOptions()
+    .setManualAckMode(true) // 306: Manual Ack Mode
+    .setDeliverAllAvailable() // recovers all events on restart listener
+    /**
+     * .setDurableName
+     * asap some event is processed successfully (acknolwedged) it's saved in durable subscriptions
+     * IF event turns offline, also saved events that were not processed successfully
+     * when comes back online service with mathing ID, NATS server will forward events not processed to service
+     *
+     * * We need setDeliverAllAvailable for the first time when bringing service up online; Otherwise events received while service was online will be just lost
+     *
+     * * We yet need a queue-group-name as described below. If listner goes offline, NATS will automaticaly remove any DurableName. By adding it, it will preserve it.
+     */
+    .setDurableName("accounting-service");
 
   const subscription = stan.subscribe(
     "ticket:created",
-    "orders-service-queue-group",
+    "queue-group-name",
     options
   );
 
