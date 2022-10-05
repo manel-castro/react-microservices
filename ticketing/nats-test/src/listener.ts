@@ -1,6 +1,6 @@
 import { randomBytes } from "crypto";
 import nats from "node-nats-streaming";
-import { ThicketCreatedListener } from "./events/ticket-created-listener";
+import { TicketCreatedListener } from "./events/ticket-created-listener";
 
 console.clear();
 
@@ -17,7 +17,7 @@ stan.on("connect", () => {
     process.exit();
   });
 
-  new ThicketCreatedListener(stan).listen();
+  new TicketCreatedListener(stan).listen();
 });
 
 /**
