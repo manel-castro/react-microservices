@@ -1,6 +1,7 @@
 import { requireAuth, validateRequest } from "@mcreservations/common";
 import express, { Request, Response } from "express";
 import { body } from "express-validator";
+import { TicketCreatedPublisher } from "../events/publishers/ticket-created-publisher";
 import { Ticket } from "../models/tickets";
 
 const router = express.Router();
@@ -28,6 +29,13 @@ router.post(
     });
 
     await ticket.save();
+
+    await new TicketCreatedPublisher(client).publish({
+      id: ticket.id,
+      title: ticket.title, // title might not be the same since in Mongoose we can do some presave hooks
+      price: ticket.price,
+      userId: ticket.userId,
+    });
 
     res.status(201).send(ticket);
   }
