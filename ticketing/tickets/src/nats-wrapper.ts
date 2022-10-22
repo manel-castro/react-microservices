@@ -15,14 +15,6 @@ class NatsWrapper {
     this._client = nats.connect(clusterId, clientId, { url });
     // this._client // no ts error, but inside promise ts error
 
-    this._client.on("close", () => {
-      console.log("NATS connection closed!");
-      //(listening signals below) exit program entirely:
-      process.exit();
-    });
-    process.on("SIGINT", () => this.client.close());
-    process.on("SIGTERM", () => this.client.close());
-
     return new Promise<void>((res, rej) => {
       this._client!.on("connect", () => {
         console.log("Connected to Nats!");
