@@ -1,8 +1,7 @@
 import { Message } from "node-nats-streaming";
 import { validateLocaleAndSetLanguage } from "typescript";
-import { Listener } from "./base-listener";
-import { Subjects } from "./subjects";
-import { TicketCreatedEvent } from "./ticket-created-event";
+
+import { TicketCreatedEvent, Subjects, Listener } from "@mcreservations/common";
 
 export class TicketCreatedListener extends Listener<TicketCreatedEvent> {
   readonly subject: Subjects.TicketCreated = Subjects.TicketCreated; //!!!! special usage of ENUM requires types
