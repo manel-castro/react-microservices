@@ -1,14 +1,19 @@
 import mongoose, { mongo } from "mongoose";
 import {
+  BadRequestError,
   NotFoundError,
+  OrderStatus,
   requireAuth,
   validateRequest,
 } from "@mcreservations/common";
 import express, { NextFunction, Request, Response } from "express";
 import { body } from "express-validator";
-import { Ticket } from "../models/tickets";
+import { Ticket } from "../models/ticket";
+import { Order } from "../models/order";
 
 const router = express.Router();
+
+const EXPIRATION_WINDOW_SECONDS = 15 * 60;
 
 router.post(
   "/api/orders",
@@ -22,7 +27,38 @@ router.post(
   ],
   validateRequest,
   async (req: Request, res: Response, next: NextFunction) => {
-    res.send({});
+    const { ticketId } = req.body;
+
+    // Find the ticket the user is trying to order in the ddbb
+    const ticket = await Ticket.findById(ticketId);
+    if (!ticket) {
+      next(new NotFoundError());
+      return;
+    }
+
+    // Make sure ticket is not already reserved
+    const isReserved = await ticket.isReserved();
+    if (isReserved) {
+      next(new BadRequestError("Ticket is already reserved"));
+      return;
+    }
+
+    // Calculate an expiration date for order
+    const expiration = new Date();
+    expiration.setSeconds(expiration.getSeconds() + EXPIRATION_WINDOW_SECONDS);
+
+    // Build the order and save it to the ddbb
+    const order = Order.build({
+      expiresAt: expiration,
+      status: OrderStatus.Created,
+      ticket,
+      userId: req.currentUser!.id,
+    });
+    await order.save();
+
+    // Publish an event saying the order has been created
+
+    res.status(201).send(order);
   }
 );
 

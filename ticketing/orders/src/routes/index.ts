@@ -1,13 +1,15 @@
-import { NotFoundError } from "@mcreservations/common";
 import express, { NextFunction, Request, Response } from "express";
-import { Ticket } from "../models/tickets";
+import { Order } from "../models/order";
 
 const router = express.Router();
 
 router.get(
   "/api/orders",
   async (req: Request, res: Response, next: NextFunction) => {
-    res.send({});
+    const orders = await Order.find({ userId: req.currentUser!.id }).populate(
+      "ticket"
+    );
+    res.send(orders);
   }
 );
 

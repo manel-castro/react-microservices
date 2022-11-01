@@ -1,13 +1,30 @@
-import { NotFoundError } from "@mcreservations/common";
+import {
+  NotAuthorizedError,
+  NotFoundError,
+  requireAuth,
+} from "@mcreservations/common";
 import express, { NextFunction, Request, Response } from "express";
-import { Ticket } from "../models/tickets";
+import { Order } from "../models/order";
 
 const router = express.Router();
 
 router.get(
-  "/api/orders/:orderI",
+  "/api/orders/:orderId",
+  requireAuth,
   async (req: Request, res: Response, next: NextFunction) => {
-    res.send({});
+    const order = await Order.findById(req.params.orderId).populate("ticket");
+
+    if (!order) {
+      next(new NotFoundError());
+      return;
+    }
+
+    if (order.userId !== req.currentUser!.id) {
+      next(new NotAuthorizedError());
+      return;
+    }
+
+    res.send(order);
   }
 );
 
