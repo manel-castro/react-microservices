@@ -1,0 +1,22 @@
+import { Subjects, Listener, TicketUpdatedEvent } from "@mcreservations/common";
+import { Message } from "node-nats-streaming";
+import { Ticket } from "../../models/ticket";
+import { queueGroupName } from "./queue-group-name";
+
+export class TicketCreatedListener extends Listener<TicketUpdatedEvent> {
+  subject: Subjects.TicketUpdated = Subjects.TicketUpdated;
+  queueGroupName: string = queueGroupName;
+
+  async onMessage(data: TicketUpdatedEvent["data"], msg: Message) {
+    const { id, title, price } = data;
+
+    const ticket = Ticket.build({
+      id,
+      title,
+      price,
+    });
+    await ticket.save();
+
+    msg.ack();
+  }
+}

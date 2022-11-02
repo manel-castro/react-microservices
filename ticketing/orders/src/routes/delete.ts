@@ -4,7 +4,10 @@ import {
   OrderStatus,
 } from "@mcreservations/common";
 import express, { NextFunction, Request, Response } from "express";
+import { OrderCancelledPublisher } from "../events/publishers/order-cancelled-publisher";
 import { Order } from "../models/order";
+import { Ticket } from "../models/ticket";
+import { natsWrapper } from "../nats-wrapper";
 
 const router = express.Router();
 
@@ -28,6 +31,10 @@ router.delete(
 
     // Pub event saying this was cancelled
 
+    new OrderCancelledPublisher(natsWrapper.client).publish({
+      id: order.id,
+      ticket: { id: order.ticket.id },
+    });
     res.status(204).send(order);
   }
 );
