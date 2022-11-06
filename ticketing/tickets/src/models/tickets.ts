@@ -10,6 +10,7 @@ interface TicketDoc extends mongoose.Document {
   title: string;
   price: number;
   userId: string;
+  version: number;
 }
 
 interface TicketModel extends mongoose.Model<TicketDoc> {
@@ -39,8 +40,13 @@ const ticketSchema = new mongoose.Schema(
         delete ret._id;
       },
     },
+    optimisticConcurrency: true,
+    // versionKey: 'version' // => Default: __v
   }
 );
+
+// optimistic concurrency control by versions
+ticketSchema.set("versionKey", "version");
 
 ticketSchema.statics.build = (attrs: TicketAttrs) => {
   return new Ticket(attrs);
