@@ -15,10 +15,16 @@ export interface TicketDoc extends mongoose.Document {
   title: string;
   price: number;
   isReserved(): Promise<boolean>;
+  version: number;
 }
 
 interface TicketModel extends mongoose.Model<TicketDoc> {
   build(attrs: TicketAttrs): TicketDoc;
+  // technically: FindByIdAndPreviousVersion
+  findByEvent(event: {
+    id: string;
+    version: number;
+  }): Promise<TicketDoc | null>;
 }
 
 const ticketSchema = new mongoose.Schema(
@@ -40,6 +46,8 @@ const ticketSchema = new mongoose.Schema(
         delete ret._id;
       },
     },
+    optimisticConcurrency: true,
+    versionKey: "version",
   }
 );
 
@@ -65,6 +73,15 @@ ticketSchema.methods.isReserved = async function () {
   });
 
   return !!existingOrder;
+};
+ticketSchema.statics.findByEvent = function (event: {
+  id: string;
+  version: number;
+}) {
+  return Ticket.findOne({
+    _id: event.id,
+    version: event.version - 1,
+  });
 };
 
 const Ticket = mongoose.model<TicketDoc, TicketModel>("Ticket", ticketSchema);

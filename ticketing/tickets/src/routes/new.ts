@@ -36,6 +36,7 @@ router.post(
       title: ticket.title, // title might not be the same since in Mongoose we can do some presave hooks
       price: ticket.price,
       userId: ticket.userId,
+      version: ticket.version,
     });
 
     res.status(201).send(ticket);
