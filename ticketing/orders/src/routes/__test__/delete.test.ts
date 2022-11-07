@@ -1,4 +1,5 @@
 import { OrderStatus } from "@mcreservations/common";
+import mongoose from "mongoose";
 import { send } from "process";
 import request from "supertest";
 import { app } from "../../app";
@@ -8,7 +9,11 @@ import { natsWrapper } from "../../nats-wrapper";
 
 it("marks an order as cancelled", async () => {
   // Create a ticket
-  const ticket = Ticket.build({ title: "concert", price: 20 });
+  const ticket = Ticket.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
+    title: "concert",
+    price: 20,
+  });
   await ticket.save();
 
   const user = global.signup();
@@ -35,7 +40,11 @@ it("marks an order as cancelled", async () => {
 
 it("emits a order cancelled event", async () => {
   // Create a ticket
-  const ticket = Ticket.build({ title: "concert", price: 20 });
+  const ticket = Ticket.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
+    title: "concert",
+    price: 20,
+  });
   await ticket.save();
 
   const user = global.signup();

@@ -51,6 +51,19 @@ const ticketSchema = new mongoose.Schema(
   }
 );
 
+/**
+ * // optimistic concurrency could be done by: 
+ * ticketSchema.pre('save', function(done) {
+ *    // @ts-ignore
+ *    this.$where = { 
+ *      version: this.get('version') - 1
+ *    }
+ * 
+ *    done();
+ * })
+ 
+ */
+
 ticketSchema.statics.build = (attrs: TicketAttrs) => {
   return new Ticket({
     _id: attrs.id,
