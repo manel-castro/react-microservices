@@ -3,6 +3,7 @@ import {
   requireAuth,
   NotAuthorizedError,
   NotFoundError,
+  BadRequestError,
 } from "@mcreservations/common";
 
 import express, { NextFunction, Request, Response } from "express";
@@ -29,6 +30,10 @@ router.put(
 
     if (!ticket) {
       return next(new NotFoundError());
+    }
+
+    if (ticket.orderId) {
+      return next(new BadRequestError("Cannot edit a reserved ticket"));
     }
 
     if (ticket.userId !== req.currentUser!.id) {
