@@ -55,3 +55,12 @@ build:
         manual:
           - src: "src/**/*.ts"
             dest: .
+    - image: manelcastro/payments
+      # - image: us.gcr.io/ticketing-dev-359710/payments
+      context: payments
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "src/**/*.ts"
+            dest: .
