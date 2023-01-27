@@ -10,6 +10,7 @@ import {
 } from "@mcreservations/common";
 
 import { validateLocaleAndSetLanguage } from "typescript";
+import { createChargeRouter } from "./routes/new";
 
 const app = express();
 app.set("trust proxy", true);
@@ -24,6 +25,8 @@ app.use(
 );
 
 app.use(currentUser); // for all routes to know if it's auth
+
+app.use(createChargeRouter);
 
 app.get("*", async (req, res, next) => {
   next(new NotFoundError());

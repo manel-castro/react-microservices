@@ -1,6 +1,5 @@
 import { OrderStatus } from "@mcreservations/common";
 import mongoose, { mongo } from "mongoose";
-import { redirect } from "next/dist/server/api-utils";
 
 interface OrderAttrs {
   id: string;

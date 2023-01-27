@@ -20,7 +20,7 @@ export class OrderCancelledListener extends Listener<OrderCancelledEvent> {
     });
 
     if (!order) {
-      throw new Error("Order not found");
+      // throw new Error("Order not found");
       return;
     }
 
