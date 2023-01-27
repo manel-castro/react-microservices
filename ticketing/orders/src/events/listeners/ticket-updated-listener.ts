@@ -18,6 +18,7 @@ export class TicketUpdatedListener extends Listener<TicketUpdatedEvent> {
     });
 
     if (!ticket) {
+      return;
       throw new Error("Ticket not found");
     }
     console.log("Ticket found in orders update");
