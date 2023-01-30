@@ -18,6 +18,8 @@ export class TicketUpdatedListener extends Listener<TicketUpdatedEvent> {
     });
 
     if (!ticket) {
+      msg.ack();
+
       return;
       throw new Error("Ticket not found");
     }
