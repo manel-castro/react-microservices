@@ -1,0 +1,26 @@
+name: deploy-tickets
+
+on:
+  push: #if merge actually counts as push
+    branches:
+      - master
+    paths:
+      - "ticketing/tickets/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2 #checkout all the code inside repo
+      - run: cd ticketing/tickets && docker build -t manelcastro/tickets .
+      - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          #https://docs.docker.com/docker-hub/access-tokens/
+      - run: docker push manelcastro/tickets
+      - uses: digitalocean/action-doctl@v2 # installs doctl
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - run: doctl kubernetes cluster kubeconfig save ticketing # connects to our cluster so that we can run commands with kubectl into digital ocean
+      - run: kubectl rollout restart deployment tickets-depl # reach that cluster and tell to restart (refetch image)
