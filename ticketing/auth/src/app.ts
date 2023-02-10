@@ -18,7 +18,7 @@ app.use(json());
 app.use(
   cookieSession({
     signed: false,
-    secure: process.env.NODE_ENV !== "test", // test run in plain HTTP, not HTTPS
+    secure: false && process.env.NODE_ENV !== "test", // test run in plain HTTP, not HTTPS // TODO: enable this
   })
 );
 

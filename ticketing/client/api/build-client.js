@@ -8,8 +8,9 @@ export default ({ req }) => {
     //  kubectl get services -n ingress-nginx (accessing to a different namespace)
 
     return axios.create({
-      baseURL:
-        "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/",
+      // baseURL:
+      //   "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/", // for dev
+      baseURL: "http://www.indive.info/", // for prod
       headers: req.headers,
       // headers: {
       //   Host: "ticketing.dev", // this is used by ingress-nginx for routing
