@@ -8,7 +8,7 @@ metadata:
 spec:
   rules:
     # This will change:
-    - host: ticketing.dev
+    - host: www.indive.info
       http:
         paths:
           - path: /api/payments/?(.*)
