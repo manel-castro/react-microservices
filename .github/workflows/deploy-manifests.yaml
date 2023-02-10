@@ -17,4 +17,4 @@ jobs:
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
       - run: doctl kubernetes cluster kubeconfig save ticketing # connects to our cluster so that we can run commands with kubectl into digital ocean
-      - run: kubectl apply -f infra/k8s  # reach that cluster and tell to restart (refetch image) 
+      - run: kubectl apply -f infra/k8s && kubectl apply -f infra/k8s-prod  # reach that cluster and tell to restart (refetch image) 
