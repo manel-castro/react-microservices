@@ -1,0 +1,20 @@
+name: deploy-manifests
+
+on: 
+  push: #if merge actually counts as push  
+    branches: 
+      - master 
+    paths:
+      - 'ticketing/infra/**'
+  
+jobs:
+  build: 
+    runs-on: ubuntu-latest
+    steps: 
+      - uses: actions/checkout@v2 #checkout all the code inside repo 
+   
+      - uses: digitalocean/action-doctl@v2 # installs doctl
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - run: doctl kubernetes cluster kubeconfig save ticketing # connects to our cluster so that we can run commands with kubectl into digital ocean
+      - run: kubectl apply -f infra/k8s  # reach that cluster and tell to restart (refetch image) 
