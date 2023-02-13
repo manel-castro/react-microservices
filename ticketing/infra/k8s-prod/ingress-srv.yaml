@@ -1,88 +1,48 @@
-# apiVersion: networking.k8s.io/v1
-# kind: Ingress
-# metadata:
-#   name: ingress-service
-#   annotations:
-#     kubernetes.io/ingress.class: nginx
-#     nginx.ingress.kubernetes.io/use-regex: "true"
-# spec:
-#   rules:
-#     # This will change:
-#     - host: www.indive.info
-#       http:
-#         paths:
-#           - path: /api/payments/?(.*)
-#             pathType: Prefix
-#             backend:
-#               service:
-#                 name: payments-srv
-#                 port:
-#                   number: 3000
-#           - path: /api/users/?(.*)
-#             pathType: Prefix
-#             backend:
-#               service:
-#                 name: auth-srv
-#                 port:
-#                   number: 3000
-#           - path: /api/tickets/?(.*)
-#             pathType: Prefix
-#             backend:
-#               service:
-#                 name: tickets-srv
-#                 port:
-#                   number: 3000
-#           - path: /api/orders/?(.*)
-#             pathType: Prefix
-#             backend:
-#               service:
-#                 name: orders-srv
-#                 port:
-#                   number: 3000
-#           - path: /?(.*)
-#             pathType: Prefix
-#             backend:
-#               service:
-#                 name: client-srv
-#                 port:
-#                   number: 3000
-# ---
-kind: Service
-apiVersion: v1
+apiVersion: networking.k8s.io/v1
+kind: Ingress
 metadata:
-  name: hello
+  name: ingress-service
   annotations:
-    service.beta.kubernetes.io/do-loadbalancer-certificate-id: "1234-5678-9012-3456"
-    service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
-    # Uncomment once hello.example.com points to the external IP address of the DO load-balancer.
-    service.beta.kubernetes.io/do-loadbalancer-hostname: "www.indive.info"
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
-  type: LoadBalancer
-  selector:
-    app: hello
-  ports:
-    - name: https
-      protocol: TCP
-      port: 443
-      targetPort: 80
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: hello
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: hello
-  template:
-    metadata:
-      labels:
-        app: hello
-    spec:
-      containers:
-        - name: hello
-          image: snormore/hello
-          ports:
-            - containerPort: 80
-              protocol: TCP
+  rules:
+    # This will change:
+    - host: www.indive.info
+      http:
+        paths:
+          - path: /api/payments/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: payments-srv
+                port:
+                  number: 3000
+          - path: /api/users/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: auth-srv
+                port:
+                  number: 3000
+          - path: /api/tickets/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: tickets-srv
+                port:
+                  number: 3000
+          - path: /api/orders/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: orders-srv
+                port:
+                  number: 3000
+          - path: /?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: client-srv
+                port:
+                  number: 8080
